@@ -2,23 +2,25 @@ const express = require('express')
 
 const app = express()
 
+const path = require('path')
+
 const db = require('./queries') //recieving a module export
 
 const PORT = 9001
 
-// Middleware
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+//middleware
+
+//host react app
+app.use(express.static(path.resolve(__dirname, '../client/build') ))
+
+
 
 //Routes
 app.get('/', (req, res) => {
     //we'll do stuff
-    res.send("Hello from the server")
+    res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'))
 })
 
-app.get('/test', (req, res) =>{
-    // do smth with the res
-})
 
 //CRUD
 //CREATE --add data to db
