@@ -12,13 +12,28 @@ const pool = new POOL({
 })
 
 //create all the function will be our request handlers in our express server
-//get al llinks from db
+//get al links from db
 
 
 //CREATE a new link in db
+const createLink = (request, response) => {
+    //take the data the user passes us and insert it into our table
+    const name = request.body.name
+    const URL = request.body.URL
+    
+    pool.query('INSERT INTO legends (name, URL) VALUES ($1, $2)', [name, URL],
+    (error, results) => {
+        if (error){
+            throw error
+        }
+    response.status(201).send("Link added with ID: ${results.insertId}")
+    })
+}
+
 
 //READ all links from db
 const getLinks = (req, res) => {
+    //gett all data currently in the database
     pool.query('SELECT * FROM legends ORDER BY id ASC', (error, results) =>{
         if (error){
             console.error('Database query error:', error)
@@ -36,5 +51,6 @@ const getLinks = (req, res) => {
 
 module.exports = {
     //export objects, functions anything
-    getLinks
+    getLinks,
+    createLink
 } 

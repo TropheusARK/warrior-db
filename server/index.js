@@ -6,14 +6,15 @@ const path = require('path')
 
 const db = require('./queries') //recieving a module export
 
-const PORT = 9001
-
 //middleware
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
+
 
 //host react app
 app.use(express.static(path.resolve(__dirname, '../client/build') ))
 
-
+const PORT = 9001
 
 //Routes
 app.get('/', (req, res) => {
@@ -23,9 +24,8 @@ app.get('/', (req, res) => {
 
 
 //CRUD
-//CREATE --add data to db
-//READ - get data from db  
-app.get('/legends', db.getLinks) //this function was exported from queries
+app.get('/legends', db.getLinks) //READ this function was exported from queries
+app.post('/new', db.createLink) //CREATE
 //UPDATE - update data in db
 //DELETE = remove data from db
 
