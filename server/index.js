@@ -23,8 +23,8 @@ const PORT = 9001
 //CRUD - API routes MUST come BEFORE static middleware
 app.get('/legends', db.getLinks) //READ this function was exported from queries
 app.post('/new', db.createLink) //CREATE
-//UPDATE - update data in db
-//DELETE = remove data from db
+app.put('/legends/:id', db.updateLink) //UPDATE - update data in db
+app.delete('/legends/:id', db.deleteLink) //DELETE - remove data from db
 
 //host react app - This should come AFTER API routes
 app.use(express.static(path.resolve(__dirname, '../client/build') ))

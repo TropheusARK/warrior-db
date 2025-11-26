@@ -50,11 +50,59 @@ const getLinks = (req, res) => {
 
 
 //Update link in the db
+const updateLink = (request, response) => {
+    const id = parseInt(request.params.id)
+    const name = request.body.name
+    const URL = request.body.URL
+    
+    console.log('Received PUT request:', { id, name, URL })
+    
+    pool.query(
+        'UPDATE legends SET name = $1, URL = $2 WHERE id = $3 RETURNING *',
+        [name, URL, id],
+        (error, results) => {
+            if (error) {
+                console.error('Database error:', error)
+                response.status(500).json({ error: error.message })
+                return
+            }
+            if (results.rows.length === 0) {
+                response.status(404).json({ error: 'Link not found' })
+                return
+            }
+            console.log('Link updated successfully:', results.rows[0])
+            response.status(200).json({ message: "Link updated successfully", link: results.rows[0] })
+        }
+    )
+}
 
 //Delete link in db
+const deleteLink = (request, response) => {
+    const id = parseInt(request.params.id)
+    
+    console.log('Received DELETE request for id:', id)
+    
+    pool.query('DELETE FROM legends WHERE id = $1 RETURNING *', [id],
+        (error, results) => {
+            if (error) {
+                console.error('Database error:', error)
+                response.status(500).json({ error: error.message })
+                return
+            }
+            if (results.rows.length === 0) {
+                response.status(404).json({ error: 'Link not found' })
+                return
+            }
+            console.log('Link deleted successfully:', results.rows[0])
+            response.status(200).json({ message: "Link deleted successfully", link: results.rows[0] })
+        }
+    )
+}
 
 module.exports = {
     //export objects, functions anything
     getLinks,
-    createLink
+    createLink,
+    updateLink,
+    deleteLink
 } 
