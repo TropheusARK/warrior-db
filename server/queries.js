@@ -17,16 +17,20 @@ const pool = new POOL({
 
 //CREATE a new link in db
 const createLink = (request, response) => {
-    //take the data the user passes us and insert it into our table
     const name = request.body.name
     const URL = request.body.URL
     
-    pool.query('INSERT INTO legends (name, URL) VALUES ($1, $2)', [name, URL],
+    console.log('Received POST request:', { name, URL }) // Add logging
+    
+    pool.query('INSERT INTO legends (name, URL) VALUES ($1, $2) RETURNING *', [name, URL],
     (error, results) => {
         if (error){
-            throw error
+            console.error('Database error:', error) // Log error instead of throwing
+            response.status(500).json({ error: error.message })
+            return
         }
-    response.status(201).send("Link added with ID: ${results.insertId}")
+        console.log('Link added successfully:', results.rows[0]) // Add logging
+        response.status(201).json({ message: "Link added successfully", link: results.rows[0] })
     })
 }
 
