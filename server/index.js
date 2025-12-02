@@ -18,7 +18,7 @@ app.use((req, res, next) => {
     next()
 })
 
-const PORT = 9001
+const PORT = process.env.PORT || 9001
 
 //CRUD - API routes MUST come BEFORE static middleware
 app.get('/legends', db.getLinks) //READ this function was exported from queries

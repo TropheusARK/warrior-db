@@ -2,14 +2,28 @@
 
 const POOL = require('pg').Pool //object that represents the connection 
 
-const pool = new POOL({
+let poolConfig
 
-    user: 'me',
-    host: 'localhost',
-    database: 'warriors',
-    password: 'password',
-    port: 5432
-})
+if (process.env.DATABASE_URL) {
+    // Production (Railway) - uses DATABASE_URL automatically provided
+    poolConfig = {
+        connectionString: process.env.DATABASE_URL,
+        ssl: {
+            rejectUnauthorized: false
+        }
+    }
+} else {
+    // Development (local)
+    poolConfig = {
+        user: process.env.DB_USER || 'me',
+        host: process.env.DB_HOST || 'localhost',
+        database: process.env.DB_NAME || 'warriors',
+        password: process.env.DB_PASSWORD || 'password',
+        port: process.env.DB_PORT || 5432
+    }
+}
+
+const pool = new POOL(poolConfig)
 
 //create all the function will be our request handlers in our express server
 //get al links from db
