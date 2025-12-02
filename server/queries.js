@@ -4,6 +4,9 @@ const POOL = require('pg').Pool //object that represents the connection
 
 let poolConfig
 
+console.log('DATABASE_URL exists?', !!process.env.DATABASE_URL)
+console.log('DATABASE_URL value:', process.env.DATABASE_URL ? 'SET (hidden for security)' : 'NOT SET')
+
 if (process.env.DATABASE_URL) {
     // Production (Railway) - uses DATABASE_URL automatically provided
     poolConfig = {
@@ -14,6 +17,7 @@ if (process.env.DATABASE_URL) {
     }
 } else {
     // Development (local)
+    console.log('Using local database config')
     poolConfig = {
         user: process.env.DB_USER || 'me',
         host: process.env.DB_HOST || 'localhost',
