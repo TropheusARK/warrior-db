@@ -48,12 +48,21 @@ app.get('/api/image-proxy', async (req, res) => {
 })
 
 //host react app - This should come AFTER API routes
-app.use(express.static(path.resolve(__dirname, '../client/build') ))
+// Try root build folder first, then client/build
+const buildPath = path.join(__dirname, '../build')
+const clientBuildPath = path.join(__dirname, '../client/build')
+
+// Check which path exists
+const fs = require('fs')
+const staticPath = fs.existsSync(buildPath) ? buildPath : clientBuildPath
+console.log('Serving static files from:', staticPath)
+app.use(express.static(staticPath))
 
 //Routes
-app.get('/', (req, res) => {
-    //we'll do stuff
-    res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'))
+app.get('*', (req, res) => {
+    const indexPath = path.join(staticPath, 'index.html')
+    console.log('Serving index.html from:', indexPath)
+    res.sendFile(indexPath)
 })
 
 // Starting express on our port
