@@ -40,7 +40,8 @@ const createLink = (request, response) => {
     
     console.log('Received POST request:', { name, URL }) // Add logging
     
-    pool.query('INSERT INTO legends (name, URL) VALUES ($1, $2) RETURNING *', [name, URL],
+    // Use lowercase 'url' to match PostgreSQL
+    pool.query('INSERT INTO legends (name, url) VALUES ($1, $2) RETURNING *', [name, URL],
     (error, results) => {
         if (error){
             console.error('Database error:', error) // Log error instead of throwing
@@ -75,8 +76,9 @@ const updateLink = (request, response) => {
     
     console.log('Received PUT request:', { id, name, URL })
     
+    // Use lowercase 'url' to match PostgreSQL
     pool.query(
-        'UPDATE legends SET name = $1, URL = $2 WHERE id = $3 RETURNING *',
+        'UPDATE legends SET name = $1, url = $2 WHERE id = $3 RETURNING *',
         [name, URL, id],
         (error, results) => {
             if (error) {
