@@ -1,10 +1,10 @@
 const express = require('express')
+const path = require('path')
+const fs = require('fs')
 
 const app = express()
 
-const path = require('path')
-
-const db = require('./queries') //recieving a module export
+const db = require('./queries')
 
 console.log("This is version 1.3")
 
@@ -48,16 +48,32 @@ app.get('/api/image-proxy', async (req, res) => {
 })
 
 //host react app - This should come AFTER API routes
-app.use(express.static(path.resolve(__dirname, '../client/build') ))
+// Try root build folder first, then client/build
+const buildPath = path.join(__dirname, '../build')
+const clientBuildPath = path.join(__dirname, '../client/build')
+const staticPath = fs.existsSync(buildPath) ? buildPath : clientBuildPath
+console.log('Serving static files from:', staticPath)
+app.use(express.static(staticPath))
 
-//Routes - Serve index.html for all non-API routes (React Router support)
-app.get('/*', (req, res) => {
-    // Don't serve index.html for API routes
-    if (req.path.startsWith('/api/') || req.path.startsWith('/legends') || req.path.startsWith('/new')) {
+// Serve index.html for root route
+app.get('/', (req, res) => {
+    const indexPath = path.join(staticPath, 'index.html')
+    console.log('Serving index.html from:', indexPath)
+    res.sendFile(indexPath)
+})
+
+// Catch-all middleware for React Router - must be last
+// This handles all routes that aren't API routes or static files
+app.use((req, res, next) => {
+    // Skip API routes - they should have been handled above
+    if (req.path.startsWith('/api/') || 
+        req.path.startsWith('/legends') || 
+        req.path.startsWith('/new') ||
+        req.method !== 'GET') {
         return res.status(404).json({ error: 'Not found' })
     }
-    const indexPath = path.join(path.resolve(__dirname, '../client/build'), 'index.html')
-    console.log('Serving index.html from:', indexPath)
+    // Serve index.html for all other GET requests (React Router)
+    const indexPath = path.join(staticPath, 'index.html')
     res.sendFile(indexPath)
 })
 
